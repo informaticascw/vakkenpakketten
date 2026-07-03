@@ -3,39 +3,14 @@ from pathlib import Path
 from typing import Dict, FrozenSet, List, Set
 from pprint import pformat
 
-BASE_FILENAME: str = "VWO_packages_2024-2025"
+BASE_FILENAME: str = "VWO_packages_2526_9vakken"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
 NUMBER_OF_SUBJECTS: int = 9
 NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 2
 
-SUBJECTS: List[str] = [
-    "ak",
-    "beco",
-    "biol",
-    "chtc",
-    "ct",
-    "dutl",
-    "econ",
-    "entl",
-    "fatl",
-    "fi",
-    "ges",
-    "gtc",
-    "in",
-    "ltc",
-    "mu",
-    "nat",
-    "netl",
-    "schk",
-    "sptl",
-    "te",
-    "wisa",
-    "wisb",
-    "wisc",
-    "wisd",
-]
+ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 
 FORBIDDEN_PAIRS: List[Set[str]] = [
     {"te", "mu"},
@@ -64,7 +39,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"ak", "in"},
             {"te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
     "ng": {
         "profile_groups": [
@@ -79,7 +54,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"econ", "beco"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
     "ngt": {
         "profile_groups": [
@@ -95,7 +70,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"econ", "beco"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
     "ema": {
         "profile_groups": [
@@ -111,7 +86,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fi"},
             {"mu", "te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
     "emb": {
         "profile_groups": [
@@ -126,7 +101,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"ak", "in"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
     "cm": {
         "profile_groups": [
@@ -142,7 +117,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fi"},
             {"mu", "te"},
         ],
-        "free_pick_groups": 2,
+        "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
 }
 
@@ -223,7 +198,7 @@ def has_forbidden_school_combination(package: Set[str]) -> bool:
 
 
 def has_valid_number_of_subjects(package: Set[str]) -> bool:
-    return len(package) == 9
+    return len(package) == NUMBER_OF_SUBJECTS
 
 
 def combine_raw(
