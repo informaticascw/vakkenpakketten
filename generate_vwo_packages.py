@@ -1,6 +1,6 @@
-from itertools import combinations, product
+from itertools import combinations
 from pathlib import Path
-from typing import Dict, Iterable, List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 # All VWO subjects provided by the user.
 SUBJECTS: List[str] = sorted(
@@ -35,57 +35,122 @@ SUBJECTS: List[str] = sorted(
 PACKAGE_SIZES: Tuple[int, int] = (8, 9)
 OUTPUT_FILE = Path("vwo_packages.txt")
 
-COMMON_REQUIRED: Set[str] = {"netl", "entl"}
-ONE_COMMON_LANGUAGE_REQUIRED: Set[str] = {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"}
-
-FORBIDDEN_PAIRS: Set[frozenset[str]] = {
-    frozenset(("te", "mu")),
-    frozenset(("in", "mu")),
-    frozenset(("in", "fi")),
-    frozenset(("wisd", "fi")),
-    frozenset(("wisd", "te")),
-    frozenset(("wisd", "mu")),
-    frozenset(("in", "ak")),
+RULES: Dict[str, Dict] = {
+    "common": {
+        "forbidden_pairs": [
+            ["te", "mu"],
+            ["in", "mu"],
+            ["in", "fi"],
+            ["wisd", "fi"],
+            ["wisd", "te"],
+            ["wisd", "mu"],
+            ["in", "ak"],
+        ],
+        "math_rules": {
+            "wisd_requires": "wisb",
+            "disallow_if_no_bridge": [
+                ["wisa", "wisc"],
+            ],
+            "bridge_subject": "wisb",
+        },
+    },
+    "profiles": {
+        "nt": {
+            "required_all": ["netl", "wisb", "nat", "schk"],
+            "required_one_of": [
+                ["entl", "ct"],
+                ["fatl", "dutl", "sptl", "chtc", "gtc", "ltc"],
+                ["in", "wisd"],
+                {"required_one_of": [["econ", "beco"], ["ak", "in"], ["te"]]},
+                {"required_one_of": [["econ", "beco"], ["ak", "in"], ["te"]]},
+            ],
+            "constraints": {
+                "allowed_modern_languages": ["fatl", "dutl"],
+            },
+        },
+        "ng": {
+            "required_all": ["netl", "wisa", "biol", "schk", "ak"],
+            "required_one_of": [
+                ["entl", "ct"],
+                ["fatl", "dutl", "sptl", "chtc", "gtc", "ltc"],
+                {"required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["econ", "beco"], ["fi"], ["mu"], ["te"]]},
+                {"required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["econ", "beco"], ["fi"], ["mu"], ["te"]]},
+            ],
+            "constraints": {},
+        },
+        "em": {
+            "required_all": ["netl", "ges", "econ", "beco"],
+            "required_one_of": [
+                ["entl", "ct"],
+                ["fatl", "dutl", "sptl", "chtc", "gtc", "ltc"],
+                ["wisa", "wisb"],
+                {
+                    "when_has": ["wisa"],
+                    "when_not_has": ["wisb"],
+                    "required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["ak"], ["fi"], ["mu"], ["te"]],
+                },
+                {
+                    "when_has": ["wisa"],
+                    "when_not_has": ["wisb"],
+                    "required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["ak"], ["fi"], ["mu"], ["te"]],
+                },
+                {
+                    "when_has": ["wisb"],
+                    "required_one_of": [["nat", "ak", "in"], ["fi"], ["mu"], ["te"]],
+                },
+                {
+                    "when_has": ["wisb"],
+                    "required_one_of": [["nat", "ak", "in"], ["fi"], ["mu"], ["te"]],
+                },
+            ],
+            "constraints": {},
+        },
+        "cm": {
+            "required_all": ["netl", "ges", "ak"],
+            "required_one_of": [
+                ["entl", "ct"],
+                ["fatl", "dutl", "sptl", "chtc", "gtc", "ltc"],
+                ["wisc", "wisa"],
+                ["fi", "te", "mu", "fatl", "dutl", "sptl", "chtc", "gtc", "ltc"],
+                {"required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["econ", "beco"], ["fi"], ["mu"], ["te"]]},
+                {"required_one_of": [["sptl", "fatl", "dutl", "chtc"], ["econ", "beco"], ["fi"], ["mu"], ["te"]]},
+            ],
+            "constraints": {},
+        },
+    },
 }
+
 
 # Legal math combinations based on the VWO free-part rules.
 # Allowed pairs: (A, B) and (B, C). Any package with D must include B.
 def valid_math_combination(package: Set[str]) -> bool:
-    if "wisd" in package and "wisb" not in package:
+    math_rules = RULES["common"]["math_rules"]
+    wisd_requires = math_rules["wisd_requires"]
+    bridge_subject = math_rules["bridge_subject"]
+
+    if "wisd" in package and wisd_requires not in package:
         return False
 
-    has_a = "wisa" in package
-    has_b = "wisb" in package
-    has_c = "wisc" in package
-
-    # Not allowed as a direct A+C combination.
-    if has_a and has_c and not has_b:
-        return False
+    for disallowed_pair in math_rules["disallow_if_no_bridge"]:
+        pair_set = set(disallowed_pair)
+        if pair_set.issubset(package) and bridge_subject not in package:
+            return False
 
     return True
 
 
 def has_forbidden_pair(package: Set[str]) -> bool:
-    return any(pair.issubset(package) for pair in FORBIDDEN_PAIRS)
+    return any(set(pair).issubset(package) for pair in RULES["common"]["forbidden_pairs"])
 
 
 def valid_nt_language_rule(package: Set[str]) -> bool:
-    # School rule interpreted as: in NT, modern language choice is only French or German.
     modern_languages = {"fatl", "dutl", "sptl", "chtc"}
     selected_modern_languages = package.intersection(modern_languages)
-    return selected_modern_languages.issubset({"fatl", "dutl"})
+    allowed_languages = set(RULES["profiles"]["nt"]["constraints"]["allowed_modern_languages"])
+    return selected_modern_languages.issubset(allowed_languages)
 
 
 def valid_common_requirements(package: Set[str]) -> bool:
-    if "netl" not in package:
-        return False
-
-    if not package.intersection({"entl", "ct"}):
-        return False
-
-    if not package.intersection(ONE_COMMON_LANGUAGE_REQUIRED):
-        return False
-
     if has_forbidden_pair(package):
         return False
 
@@ -95,58 +160,31 @@ def valid_common_requirements(package: Set[str]) -> bool:
     return True
 
 
-PROFILE_RULES: Dict[str, Dict[str, Iterable[Set[str]]]] = {
-    "nt": {
-        "required_all": {"wisb", "nat", "schk"},
-        "required_one_of": [
-            {"in", "wisd"},
-        ],
-    },
-    "ng": {
-        "required_all": {"wisa", "biol", "schk", "ak"},
-        "required_one_of": [],
-    },
-    "em": {
-        "required_all": {"ges", "econ", "beco"},
-        "required_one_of": [
-            {"wisa", "wisb"},
-        ],
-    },
-    "cm": {
-        "required_all": {"ges", "ak"},
-        "required_one_of": [
-            {"wisc", "wisa"},
-            {"fi", "te", "mu", "fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
-        ],
-    },
-}
+def _nested_option_matches(package: Set[str], option: object) -> bool:
+    if isinstance(option, str):
+        return option in package
+    if isinstance(option, list):
+        return any(subject in package for subject in option)
+    return False
 
 
-def valid_free_part_requirements(profile: str, package: Set[str]) -> bool:
-    # Lessentabel VWO: vrije deel (2) interpreted as exactly two chosen subjects
-    # from the profile-specific vrije-deel options.
-    if profile == "cm":
-        free_pool = {"sptl", "fatl", "dutl", "chtc", "econ", "beco", "fi", "mu", "te"}
-        return len(package.intersection(free_pool)) == 2
+def required_one_of_entry_is_valid(entry: object, package: Set[str]) -> bool:
+    if isinstance(entry, list):
+        return bool(set(entry).intersection(package))
 
-    if profile == "em":
-        if "wisa" in package:
-            free_pool = {"sptl", "fatl", "dutl", "chtc", "ak", "fi", "mu", "te"}
-        elif "wisb" in package:
-            free_pool = {"nat", "ak", "in", "fi", "mu", "te"}
-        else:
-            return False
-        return len(package.intersection(free_pool)) == 2
+    if isinstance(entry, dict):
+        when_has = set(entry.get("when_has", []))
+        if when_has and not when_has.issubset(package):
+            return True
 
-    if profile == "ng":
-        free_pool = {"sptl", "fatl", "dutl", "chtc", "econ", "beco", "fi", "mu", "te"}
-        return len(package.intersection(free_pool)) == 2
+        when_not_has = set(entry.get("when_not_has", []))
+        if when_not_has and when_not_has.intersection(package):
+            return True
 
-    if profile == "nt":
-        free_pool = {"econ", "beco", "ak", "in", "te"}
-        return len(package.intersection(free_pool)) == 2
+        options = entry.get("required_one_of", [])
+        return any(_nested_option_matches(package, option) for option in options)
 
-    return True
+    return False
 
 
 def package_is_valid(profile: str, package: Set[str]) -> bool:
@@ -159,82 +197,76 @@ def package_is_valid(profile: str, package: Set[str]) -> bool:
     if profile == "nt" and not valid_nt_language_rule(package):
         return False
 
-    rules = PROFILE_RULES[profile]
+    rules = RULES["profiles"][profile]
     required_all = set(rules["required_all"])
     if not required_all.issubset(package):
         return False
 
-    for options in rules["required_one_of"]:
-        if not set(options).intersection(package):
+    for entry in rules["required_one_of"]:
+        if not required_one_of_entry_is_valid(entry, package):
             return False
-
-    if not valid_free_part_requirements(profile, package):
-        return False
 
     return True
 
 
 def generate_for_profile(profile: str) -> Set[str]:
-    rules = PROFILE_RULES[profile]
+    rules = RULES["profiles"][profile]
     required_all = set(rules["required_all"])
-    required_groups = [set(group) for group in rules["required_one_of"]]
-
     results: Set[str] = set()
 
-    # Build minimal base sets from all profile-choice combinations.
-    for choices in product(*required_groups):
-        base = {"netl"} | required_all | set(choices)
+    # Build from required profile subjects and validate all rule groups afterward.
+    base = set(required_all)
 
-        if len(base) > max(PACKAGE_SIZES):
+    if len(base) > max(PACKAGE_SIZES):
+        return results
+
+    remaining_subjects = [s for s in SUBJECTS if s not in base]
+
+    for target_size in PACKAGE_SIZES:
+        missing = target_size - len(base)
+        if missing < 0:
             continue
 
-        if not base.intersection(ONE_COMMON_LANGUAGE_REQUIRED):
-            # If no common language in base, it can still be added later.
-            pass
+        for extra in combinations(remaining_subjects, missing):
+            package = set(base)
+            package.update(extra)
 
-        remaining_subjects = [s for s in SUBJECTS if s not in base]
-
-        for target_size in PACKAGE_SIZES:
-            missing = target_size - len(base)
-            if missing < 0:
-                continue
-
-            for extra in combinations(remaining_subjects, missing):
-                package = set(base)
-                package.update(extra)
-
-                if package_is_valid(profile, package):
-                    results.add("+".join(sorted(package)))
+            if package_is_valid(profile, package):
+                results.add("+".join(sorted(package)))
 
     return results
 
 
-def generate_all_packages() -> Dict[str, Set[str]]:
-    by_profile: Dict[str, Set[str]] = {}
-    for profile in PROFILE_RULES:
-        by_profile[profile] = generate_for_profile(profile)
-    return by_profile
+def write_output(packages_all: Set[str], path: Path) -> None:
+    sorted_packages = sorted(packages_all)
+    path.write_text("\n".join(sorted_packages) + "\n", encoding="utf-8")
 
 
-def write_output(by_profile: Dict[str, Set[str]], path: Path) -> None:
-    # Final output is one package per line, no profile label, unique across profiles.
-    all_packages = sorted(set().union(*by_profile.values()))
-    path.write_text("\n".join(all_packages) + "\n", encoding="utf-8")
-
-
-def print_summary(by_profile: Dict[str, Set[str]]) -> None:
-    total_unique = len(set().union(*by_profile.values()))
+def print_summary(
+    packages_nt: Set[str],
+    packages_ng: Set[str],
+    packages_em: Set[str],
+    packages_cm: Set[str],
+    packages_all: Set[str],
+) -> None:
     print("Generated VWO package counts:")
-    for profile, packages in by_profile.items():
-        print(f"- {profile}: {len(packages)}")
-    print(f"- total unique packages: {total_unique}")
+    print(f"- nt: {len(packages_nt)}")
+    print(f"- ng: {len(packages_ng)}")
+    print(f"- em: {len(packages_em)}")
+    print(f"- cm: {len(packages_cm)}")
+    print(f"- total unique packages: {len(packages_all)}")
     print(f"Output file: {OUTPUT_FILE}")
 
 
 def main() -> None:
-    by_profile = generate_all_packages()
-    write_output(by_profile, OUTPUT_FILE)
-    print_summary(by_profile)
+    packages_nt = generate_for_profile("nt")
+    packages_ng = generate_for_profile("ng")
+    packages_em = generate_for_profile("em")
+    packages_cm = generate_for_profile("cm")
+    packages_all = packages_nt | packages_ng | packages_em | packages_cm
+
+    write_output(packages_all, OUTPUT_FILE)
+    print_summary(packages_nt, packages_ng, packages_em, packages_cm, packages_all)
 
 
 if __name__ == "__main__":
