@@ -1,6 +1,14 @@
 from itertools import combinations, product
 from pathlib import Path
 from typing import Dict, FrozenSet, List, Set
+from pprint import pformat
+
+BASE_FILENAME: str = "VWO_packages_2024-2025"
+PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
+REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
+
+NUMBER_OF_SUBJECTS: int = 9
+NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 2
 
 SUBJECTS: List[str] = [
     "ak",
@@ -29,8 +37,6 @@ SUBJECTS: List[str] = [
     "wisd",
 ]
 
-OUTPUT_FILE = Path("vwo_packages_v2.txt")
-
 FORBIDDEN_PAIRS: List[Set[str]] = [
     {"te", "mu"},
     {"in", "mu"},
@@ -58,7 +64,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"ak", "in"},
             {"te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
     "ng": {
         "profile_groups": [
@@ -73,7 +79,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"econ", "beco"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
     "ngt": {
         "profile_groups": [
@@ -89,7 +95,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"econ", "beco"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
     "ema": {
         "profile_groups": [
@@ -105,7 +111,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fi"},
             {"mu", "te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
     "emb": {
         "profile_groups": [
@@ -120,7 +126,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"ak", "in"},
             {"fi", "mu", "te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
     "cm": {
         "profile_groups": [
@@ -136,7 +142,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fi"},
             {"mu", "te"},
         ],
-        "free_pick_groups": 1,
+        "free_pick_groups": 2,
     },
 }
 
@@ -217,7 +223,7 @@ def has_forbidden_school_combination(package: Set[str]) -> bool:
 
 
 def has_valid_number_of_subjects(package: Set[str]) -> bool:
-    return len(package) == 8
+    return len(package) == 9
 
 
 def combine_raw(
@@ -241,9 +247,13 @@ def combine_raw(
     return result
 
 
-def write_output(packages_all: Set[FrozenSet[str]], output_file: Path) -> None:
+def write_output(packages_all: Set[FrozenSet[str]], output_file: str) -> None:
     lines = ["+".join(sorted(package)) for package in packages_all]
-    output_file.write_text("\n".join(sorted(lines)) + "\n", encoding="utf-8")
+    Path(output_file).write_text("\n".join(sorted(lines)) + "\n", encoding="utf-8")
+
+
+def write_report(report_text: str, report_file: str) -> None:
+    Path(report_file).write_text(report_text + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -293,7 +303,7 @@ def main() -> None:
     # Apply global rules to a copy of the raw package set.
     packages_all = set(packages_all_raw)
 
-    # Keep only full 8-subject combinations.
+    # Keep only combinations with correct number of subjects
     packages_all = {
         package for package in packages_all if has_valid_number_of_subjects(set(package))
     }
@@ -307,26 +317,38 @@ def main() -> None:
     }
 
     # Profile-specific counts after global filtering.
-    packages_nt = packages_all & packages_nt_raw
-    packages_ng = packages_all & packages_ng_raw
-    packages_ngt = packages_all & packages_ngt_raw
-    packages_ema = packages_all & packages_ema_raw
-    packages_emb = packages_all & packages_emb_raw
-    packages_cm = packages_all & packages_cm_raw
+    report_lines_part1 = [
+        f"BASEFILENAME: {BASE_FILENAME}",
+        "",
+        f"NUMBER_OF_SUBJECTS: {NUMBER_OF_SUBJECTS}",
+        f"NUMBER_OF_FREE_CHOICE_SUBJECTS: {NUMBER_OF_FREE_CHOICE_SUBJECTS}",
+        "",
+        "PACKAGE COUNTS:",
+        f"- nt packages: {len(packages_all & packages_nt_raw)}",
+        f"- ng packages: {len(packages_all & packages_ng_raw)}",
+        f"- ngt packages: {len(packages_all & packages_ngt_raw)}",
+        f"- ema packages: {len(packages_all & packages_ema_raw)}",
+        f"- emb packages: {len(packages_all & packages_emb_raw)}",
+        f"- cm packages: {len(packages_all & packages_cm_raw)}",
+        f"all unique packages: {len(packages_all)}",
+        "",
+    ]
+    report_lines_part2 = [
+        "FORBIDDEN_PAIRS:",
+        pformat(FORBIDDEN_PAIRS, width=100, sort_dicts=False),
+        "PROFILE_RULES:",
+        pformat(PROFILE_RULES, width=100, sort_dicts=False),
+    ]
 
-    # Step 7
-    print("V2 generation summary")
-    print(f"- nt packages: {len(packages_nt)}")
-    print(f"- ng packages: {len(packages_ng)}")
-    print(f"- ngt packages: {len(packages_ngt)}")
-    print(f"- ema packages: {len(packages_ema)}")
-    print(f"- emb packages: {len(packages_emb)}")
-    print(f"- cm packages: {len(packages_cm)}")
-    print(f"- all unique packages: {len(packages_all)}")
+    screen_text = "\n".join(report_lines_part1)
+    print(screen_text)
+  
+    report_text = "\n".join(report_lines_part1 + report_lines_part2)
+    write_report(report_text, REPORT_FILE)
+    print(f"REPORT_FILE: {REPORT_FILE}")
 
-    write_output(packages_all, OUTPUT_FILE)
-    print(f"- output file: {OUTPUT_FILE}")
-
+    write_output(packages_all, PACKAGELIST_FILE)
+    print(f"PACKAGELIST_FILE: {PACKAGELIST_FILE}")
 
 if __name__ == "__main__":
     main()

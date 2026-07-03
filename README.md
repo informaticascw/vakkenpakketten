@@ -1,38 +1,62 @@
 # vakkenpakketten
 Generator voor mogelijke vakkenpakketten.
 
+Gemaakt met veel AI gebruik.
+
 ## Quick start
 
 Run:
 
 ```bash
-python generate_vwo_packages.py
+python generate_packages.py
 ```
 
-This creates `vwo_packages.txt` with one package per line.
+This creates two files:
+
+- `VWO_packages_2024-2025_packages.txt`
+- `VWO_packages_2024-2025_report.txt`
+
+## Configuration
+
+You can quickly adjust these constants at the top of `generate_packages.py`:
+
+- `BASE_FILENAME`: base name for generated files
+- `NUMBER_OF_SUBJECTS`: required total number of subjects per package
+- `NUMBER_OF_FREE_CHOICE_SUBJECTS`: number of vrije-keuze subjects to include
 
 ## Output format
 
-- Subject abbreviations only
-- `+` as separator
-- Alphabetical order per package
-- Package size: 8 or 9 subjects
+- Package list file:
+	- Subject abbreviations only
+	- `+` as separator
+	- Alphabetical order per package
+	- Exactly 9 subjects per package
+- Report file:
+	- Run configuration
+	- Package counts per profile
+	- Forbidden pairs
+	- Full `PROFILE_RULES` snapshot
 
 Example:
 
 ```txt
-econ+entl+gtc+nat+netl+schk+wisb+wisd
+econ+entl+gtc+nat+netl+schk+wisb+wisd+te
 ```
 
 ## Rules currently encoded (VWO)
 
-- Legal profile structure for `nt`, `ng`, `em`, `cm` (based on article 2.5 to 2.7)
-- School exclusion pairs from the Profielkeuze page text
-- School note for NT: modern language choice limited to French/German
-- Extra school rules from `Lessentabel_vwo.jpg`, including:
-	- `netl` and (`entl` or `ct`) in the common part
-	- tighter profile-vak combinations per profile
-	- profile-specific vrije-deel constraints
+- Profiles: `nt`, `ng`, `ngt`, `ema`, `emb`, `cm`
+- Common part (`_common.common_groups`):
+	- `netl`
+	- one of `entl` or `ct`
+- Profile part (`profile_groups`): exactly one subject from each profile group
+- Free-choice part (`free_groups`):
+	- choose exactly 2 free-choice groups (`free_pick_groups = 2`)
+	- then choose exactly one subject from each chosen group
+- Global filters:
+	- exactly 9 subjects
+	- forbidden school pairs
+	- math constraints (`wisd` requires `wisb`; `wisc` cannot combine with `wisa`)
 
 ## Data structure choices
 
@@ -41,7 +65,7 @@ econ+entl+gtc+nat+netl+schk+wisb+wisd
 	- No duplicate subjects possible by construction.
 - Persisted output uses a canonical `str` line (`+`-joined sorted subjects):
 	- Easy to compare, sort, deduplicate, and write to text file.
-- All generated packages are stored in a `set[str]`:
+- All generated packages are stored in a `set[frozenset[str]]` internally:
 	- Prevents duplicates across profiles automatically.
 
 ## Confirmed scope
@@ -52,5 +76,5 @@ econ+entl+gtc+nat+netl+schk+wisb+wisd
 
 ## Current interpretation notes
 
-- The table label `vrije deel (2)` is interpreted as: each package must contain exactly two subjects from the profile-specific vrije-deel options.
-- If you want a stricter interpretation (for example exact option blocks), this can be added.
+- The table label `vrije deel (2)` is interpreted as: each package must contain exactly two vrije-deel subjects, chosen via two selected `free_groups`.
+- Group overlap is allowed in config, but duplicates are prevented in generated packages.
