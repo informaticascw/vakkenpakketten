@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Dict, FrozenSet, List, Set
 from pprint import pformat
 
-BASE_FILENAME: str = "VWO_packages_2526_9vakken"
+BASE_FILENAME: str = "vwo_8vakken_scwrules"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
-NUMBER_OF_SUBJECTS: int = 9
-NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 2
+NUMBER_OF_SUBJECTS: int = 8
+NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 1
 
 ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 
