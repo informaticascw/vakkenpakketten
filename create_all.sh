@@ -6,3 +6,5 @@ python create_8vakken_maxprofiles.py
 python create_8vakken_scwrules.py
 python create_9vakken_scwrules.py
 python create_8vakken_1vrij_allcombos_2mvtvrij_maxprofiles_somelimits.py
+python create_8vakken_1vrij_allcombos_2mvtvrij_someprofiles_somelimits.py
+python create_8vakken_1vrij_allcombos_2mvtvrij_nowisabcb.py

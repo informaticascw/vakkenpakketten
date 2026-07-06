@@ -1,21 +1,21 @@
-BASEFILENAME: vwo_8vakken_1vrij_allcombos_2mvtvrij_maxprofiles
+BASEFILENAME: vwo_8vakken_1vrij_allcombos_2mvtvrij_someprofiles_somelimits
 
 NUMBER_OF_SUBJECTS: 8
 NUMBER_OF_FREE_CHOICE_SUBJECTS: 1
 
 PACKAGE COUNTS:
-- nt packages: 716
-- ng packages: 846
-- ngt packages: 270
-- ema packages: 528
-- emb packages: 632
-- cm packages: 3570
-all unique packages: 5150
+- nt packages: 632
+- ng packages: 788
+- ngt packages: 240
+- ema packages: 264
+- emb packages: 288
+- cm packages: 1110
+all unique packages: 2752
 
 FORBIDDEN_PAIRS:
 []
 PROFILE_RULES:
-{'_common': {'common_groups': [{'netl'}, {'entl', 'ct'}]},
+{'_common': {'common_groups': [{'netl'}, {'ct', 'entl'}]},
  'nt': {'profile_groups': [{'ak',
                             'beco',
                             'biol',
@@ -43,7 +43,7 @@ PROFILE_RULES:
                            {'nat'},
                            {'schk'},
                            {'wisb'},
-                           {'wisd', 'biol', 'in'}],
+                           {'in', 'wisd', 'biol'}],
         'free_groups': [{'ak',
                          'beco',
                          'biol',
@@ -96,7 +96,7 @@ PROFILE_RULES:
                            {'ak', 'nat'},
                            {'biol'},
                            {'schk'},
-                           {'wisa', 'wisb'}],
+                           {'wisb', 'wisa'}],
         'free_groups': [{'ak',
                          'beco',
                          'biol',
@@ -175,10 +175,10 @@ PROFILE_RULES:
                           'wisc',
                           'wisd'}],
          'free_pick_groups': 1},
- 'ema': {'profile_groups': [{'gtc', 'dutl', 'sptl', 'fatl', 'ltc', 'chtc'},
+ 'ema': {'profile_groups': [{'fatl', 'chtc', 'ltc', 'gtc', 'sptl', 'dutl'},
                             {'ges'},
                             {'econ'},
-                            {'dutl', 'sptl', 'fatl', 'beco', 'ak', 'chtc'},
+                            {'beco', 'ak'},
                             {'wisa'}],
          'free_groups': [{'ak',
                           'beco',
@@ -205,10 +205,10 @@ PROFILE_RULES:
                           'wisc',
                           'wisd'}],
          'free_pick_groups': 1},
- 'emb': {'profile_groups': [{'gtc', 'dutl', 'sptl', 'fatl', 'ltc', 'chtc'},
+ 'emb': {'profile_groups': [{'fatl', 'chtc', 'ltc', 'gtc', 'sptl', 'dutl'},
                             {'ges'},
                             {'econ'},
-                            {'dutl', 'sptl', 'fatl', 'beco', 'ak', 'chtc'},
+                            {'beco', 'ak'},
                             {'wisb'}],
          'free_groups': [{'ak',
                           'beco',
@@ -235,11 +235,11 @@ PROFILE_RULES:
                           'wisc',
                           'wisd'}],
          'free_pick_groups': 1},
- 'cm': {'profile_groups': [{'gtc', 'dutl', 'sptl', 'fatl', 'ltc', 'chtc'},
+ 'cm': {'profile_groups': [{'fatl', 'chtc', 'ltc', 'gtc', 'sptl', 'dutl'},
                            {'ges'},
-                           {'econ', 'ak'},
-                           {'wisa', 'wisb', 'wisc'},
-                           {'dutl', 'fi', 'sptl', 'mu', 'ltc', 'gtc', 'fatl', 'te', 'chtc'}],
+                           {'ak'},
+                           {'wisa', 'wisc'},
+                           {'fatl', 'chtc', 'ltc', 'gtc', 'fi', 'te', 'dutl', 'mu', 'sptl'}],
         'free_groups': [{'ak',
                          'beco',
                          'biol',
