@@ -1,0 +1,63 @@
+BASEFILENAME: vwo_8vakken_allcombos
+
+NUMBER_OF_SUBJECTS: 8
+NUMBER_OF_FREE_CHOICE_SUBJECTS: 1
+
+PACKAGE COUNTS:
+- nt packages: 72
+- ng packages: 88
+- ngt packages: 112
+- ema packages: 76
+- emb packages: 72
+- cm packages: 596
+all unique packages: 1016
+
+FORBIDDEN_PAIRS:
+[]
+PROFILE_RULES:
+{'_common': {'common_groups': [{'netl'}, {'ct', 'entl'}]},
+ 'nt': {'profile_groups': [{'dutl', 'fatl', 'ltc', 'gtc'},
+                           {'nat'},
+                           {'schk'},
+                           {'wisb'},
+                           {'in', 'wisd'}],
+        'free_groups': [{'econ', 'beco'}, {'ak', 'in'}, {'te'}],
+        'free_pick_groups': 1},
+ 'ng': {'profile_groups': [{'chtc', 'sptl', 'fatl', 'dutl', 'ltc', 'gtc'},
+                           {'ak'},
+                           {'biol'},
+                           {'schk'},
+                           {'wisa'}],
+        'free_groups': [{'chtc', 'dutl', 'sptl', 'fatl'}, {'econ', 'beco'}, {'mu', 'fi', 'te'}],
+        'free_pick_groups': 1},
+ 'ngt': {'profile_groups': [{'chtc', 'sptl', 'fatl', 'dutl', 'ltc', 'gtc'},
+                            {'nat'},
+                            {'biol'},
+                            {'schk'},
+                            {'wisb'}],
+         'free_groups': [{'chtc', 'dutl', 'sptl', 'fatl'},
+                         {'in', 'wisd'},
+                         {'econ', 'beco'},
+                         {'mu', 'fi', 'te'}],
+         'free_pick_groups': 1},
+ 'ema': {'profile_groups': [{'chtc', 'sptl', 'fatl', 'dutl', 'ltc', 'gtc'},
+                            {'ges'},
+                            {'econ'},
+                            {'beco'},
+                            {'wisa'}],
+         'free_groups': [{'chtc', 'dutl', 'sptl', 'fatl'}, {'ak'}, {'fi'}, {'mu', 'te'}],
+         'free_pick_groups': 1},
+ 'emb': {'profile_groups': [{'chtc', 'sptl', 'fatl', 'dutl', 'ltc', 'gtc'},
+                            {'ges'},
+                            {'econ'},
+                            {'beco'},
+                            {'wisb'}],
+         'free_groups': [{'nat'}, {'ak', 'in'}, {'mu', 'fi', 'te'}],
+         'free_pick_groups': 1},
+ 'cm': {'profile_groups': [{'chtc', 'sptl', 'fatl', 'dutl', 'ltc', 'gtc'},
+                           {'ges'},
+                           {'ak'},
+                           {'wisc', 'wisa'},
+                           {'chtc', 'mu', 'fi', 'sptl', 'fatl', 'te', 'dutl', 'ltc', 'gtc'}],
+        'free_groups': [{'chtc', 'dutl', 'sptl', 'fatl'}, {'econ', 'beco'}, {'fi'}, {'mu', 'te'}],
+        'free_pick_groups': 1}}

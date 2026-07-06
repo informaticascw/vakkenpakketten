@@ -3,12 +3,17 @@ from pathlib import Path
 from typing import Dict, FrozenSet, List, Set
 from pprint import pformat
 
+#
+# Data
+#
+
 BASE_FILENAME: str = "vwo_8vakken_scwrules"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
 NUMBER_OF_SUBJECTS: int = 8
 NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 1
+MAX_NUMBER_OF_LANGUAGES: int = NUMBER_OF_SUBJECTS
 
 ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 
@@ -121,6 +126,9 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
     },
 }
 
+#
+# create package functions
+#
 
 def generate_subpakketten_gemeenschappelijk() -> List[Set[str]]:
     required_groups: List[Set[str]] = PROFILE_RULES["_common"]["common_groups"]
@@ -176,31 +184,6 @@ def generate_subpakketten_vrijekeuze(profile_name: str) -> List[Set[str]]:
 
     return [set(package) for package in valid]
 
-
-def valid_wiskunde_rules(package: Set[str]) -> bool:
-    # Math consistency rules.
-    if "wisd" in package and "wisb" not in package:
-        return False
-
-    if "wisc" in package and "wisa" in package:
-        return False
-
-    return True
-
-
-def has_forbidden_school_combination(package: Set[str]) -> bool:
-    # School-level forbidden subject pairs.
-    for pair in FORBIDDEN_PAIRS:
-        if pair.issubset(package):
-            return True
-
-    return False
-
-
-def has_valid_number_of_subjects(package: Set[str]) -> bool:
-    return len(package) == NUMBER_OF_SUBJECTS
-
-
 def combine_raw(
     common_subpackages: List[Set[str]],
     profile_subpackages: List[Set[str]],
@@ -221,6 +204,50 @@ def combine_raw(
 
     return result
 
+#
+# validation functions
+#
+
+def valid_wiskunde_rules(package: Set[str]) -> bool:
+    # legal requirement
+    if "wisd" in package and "wisb" not in package:
+        return False
+
+    # legal requirement
+    if "wisc" in package and "wisa" in package:
+        return False
+        
+    # school requirement
+    # if "wisc" in package and "wisb" in package:
+    #    return False
+
+    return True
+
+
+def has_forbidden_school_combination(package: Set[str]) -> bool:
+    # School-level forbidden subject pairs.
+    for pair in FORBIDDEN_PAIRS:
+        if pair.issubset(package):
+            return True
+
+    return False
+
+def has_forbidden_entl_ct_combination(package: Set[str]) -> bool:
+    # entl and ct are mutually exclusive in one package.
+    return "entl" in package and "ct" in package
+
+def has_over_x_languages(package: Set[str], max_nr_of_languages: int) -> bool:
+    # Check if the package contains more than 4 language subjects.
+    language_subjects = {"netl", "entl", "ct", "dutl", "fatl", "sptl", "chtc", "gtc", "ltc"}
+    return len(package & language_subjects) > max_nr_of_languages
+
+def has_valid_number_of_subjects(package: Set[str]) -> bool:
+    # packages where the same subject has been chosen on multiple positions will have fewer than the required number of subjects.
+    return len(package) == NUMBER_OF_SUBJECTS
+
+#
+# report functions
+#
 
 def write_output(packages_all: Set[FrozenSet[str]], output_file: str) -> None:
     lines = ["+".join(sorted(package)) for package in packages_all]
@@ -232,6 +259,11 @@ def write_report(report_text: str, report_file: str) -> None:
 
 
 def main() -> None:
+
+    #
+    # create packages of subjects
+    #
+
     common_subpackages = generate_subpakketten_gemeenschappelijk()
 
     packages_nt_raw = combine_raw(
@@ -275,6 +307,10 @@ def main() -> None:
         | packages_cm_raw
     )
 
+    #
+    # remove packages that violate rules
+    #
+
     # Apply global rules to a copy of the raw package set.
     packages_all = set(packages_all_raw)
 
@@ -282,14 +318,26 @@ def main() -> None:
     packages_all = {
         package for package in packages_all if has_valid_number_of_subjects(set(package))
     }
-    # Apply school rules.
+    # Apply school rules forbidding certain combinations
     packages_all = {
         package for package in packages_all if not has_forbidden_school_combination(set(package))
     }
-    # Apply math rules.
+    # Apply legal and school math rules.
     packages_all = {
         package for package in packages_all if valid_wiskunde_rules(set(package))
     }
+    # Apply legal rules that ct and entl are not allowed in one package.
+    packages_all = {
+        package for package in packages_all if not has_forbidden_entl_ct_combination(set(package))
+    }
+     # Apply school max number of languages per package.
+    packages_all = {
+        package for package in packages_all if not has_over_x_languages(set(package),MAX_NUMBER_OF_LANGUAGES)
+    }
+
+    #
+    # create report and output files
+    #
 
     # Profile-specific counts after global filtering.
     report_lines_part1 = [

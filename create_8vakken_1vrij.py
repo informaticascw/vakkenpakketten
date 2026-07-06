@@ -7,13 +7,13 @@ from pprint import pformat
 # Data
 #
 
-BASE_FILENAME: str = "vwo_2425_9vakken"
+BASE_FILENAME: str = "vwo_8vakken_1vrij"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
-NUMBER_OF_SUBJECTS: int = 9
-NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 2
-MAX_NUMBER_OF_LANGUAGES: int = 8
+NUMBER_OF_SUBJECTS: int = 8
+NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 1
+MAX_NUMBER_OF_LANGUAGES: int = NUMBER_OF_SUBJECTS
 
 ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 
@@ -40,9 +40,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"in", "wisd"},
         ],
         "free_groups": [
-            {"econ", "beco"},
-            {"ak", "in"},
-            {"te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
@@ -55,9 +53,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"wisa"},
         ],
         "free_groups": [
-            {"sptl", "fatl", "dutl", "chtc"},
-            {"econ", "beco"},
-            {"fi", "mu", "te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
@@ -70,10 +66,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"wisb"},
         ],
         "free_groups": [
-            {"sptl", "fatl", "dutl", "chtc"},
-            {"in", "wisd"},
-            {"econ", "beco"},
-            {"fi", "mu", "te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
@@ -86,10 +79,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"wisa"},
         ],
         "free_groups": [
-            {"sptl", "fatl", "dutl", "chtc"},
-            {"ak"},
-            {"fi"},
-            {"mu", "te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
@@ -102,9 +92,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"wisb"},
         ],
         "free_groups": [
-            {"nat"},
-            {"ak", "in"},
-            {"fi", "mu", "te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
@@ -117,10 +105,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fi", "te", "mu", "fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
         ],
         "free_groups": [
-            {"sptl", "fatl", "dutl", "chtc"},
-            {"econ", "beco"},
-            {"fi"},
-            {"mu", "te"},
+            ALL_SUBJECTS,
         ],
         "free_pick_groups": NUMBER_OF_FREE_CHOICE_SUBJECTS,
     },
