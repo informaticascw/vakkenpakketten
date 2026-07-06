@@ -12,8 +12,13 @@ from pprint import pformat
 # wisb with wisc not allowed: # packages from 4156 to 3888
 # wisb with wisa not allowed: # packages from 3888 to 3620
 
+# nat bij ng met wisa
+# ak bij ng met wisb
+# ak in ema and emb
+# no econ in cm (would create about 900 addtional packages)
+# no biol in nt (would add 0 packages because this was already possible through an ntg-profile)
 
-BASE_FILENAME: str = "vwo_8vakken_1vrij_allcombos_2mvtvrij_maxprofiles_somelimits"
+BASE_FILENAME: str = "vwo_8vakken_1vrij_allcombos_2mvtvrij_somemoreprofiles_somelimits"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
@@ -37,7 +42,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"nat"},
             {"schk"},
             {"wisb"},
-            {"in", "wisd", "biol"}, # add biol
+            {"in", "wisd"}, # no # add biol
         ],
         "free_groups": [
             ALL_SUBJECTS,
@@ -75,7 +80,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
             {"econ"},
-            {"beco", "ak", "fatl", "dutl","sptl","chtc"}, # add "ak", "fatl", "dutl","sptl","chtc"
+            {"beco", "ak"}, # add "ak", no "fatl", "dutl","sptl","chtc"
             {"wisa"},
         ],
         "free_groups": [
@@ -88,7 +93,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
             {"econ"},
-            {"beco", "ak", "fatl", "dutl","sptl","chtc"}, # add "ak", "fatl", "dutl","sptl","chtc"
+            {"beco", "ak"}, # add "ak", no "fatl", "dutl","sptl","chtc"
             {"wisb"},
         ],
         "free_groups": [
@@ -100,7 +105,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
         "profile_groups": [
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
-            {"ak", "econ"}, # add "econ"
+            {"ak"}, # not add "econ"
             {"wisc", "wisa"}, # add "wisb" # packages from 4910 to 4156
             {"fi", "te", "mu", "fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
         ],

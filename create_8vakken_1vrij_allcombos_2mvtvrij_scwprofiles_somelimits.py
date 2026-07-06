@@ -7,13 +7,18 @@ from pprint import pformat
 # Data
 #
 
-BASE_FILENAME: str = "vwo_8vakken_1vrij_allcombos_2mvtvrij_nowisabcb"
+# max 4 languages: 
+# no "wisb" on cm:=> not applicable
+# wisb with wisc not allowed:
+# wisb with wisa not allowed: 
+
+BASE_FILENAME: str = "vwo_8vakken_1vrij_allcombos_2mvtvrij_scwprofiles_somelimits"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
 NUMBER_OF_SUBJECTS: int = 8
 NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 1
-MAX_NUMBER_OF_LANGUAGES: int = NUMBER_OF_SUBJECTS
+MAX_NUMBER_OF_LANGUAGES: int = 4
 
 ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 

@@ -7,13 +7,24 @@ from pprint import pformat
 # Data
 #
 
+# max 4 languages: packages from 5150 to 4910
+# no "wisb" on cm: packages from 4910 to 4156
+# wisb with wisc not allowed: # packages from 4156 to 3888
+# wisb with wisa not allowed: # packages from 3888 to 3620
+
+# nat bij ng met wisa
+# ak bij ng met wisb
+# no ak in ema and emb
+# no econ in cm (would create about 900 addtional packages)
+# no biol in nt (would add 0 packages because this was already possible through an ntg-profile)
+
 BASE_FILENAME: str = "vwo_8vakken_1vrij_allcombos_2mvtvrij_someprofiles_somelimits"
 PACKAGELIST_FILE: str = f"{BASE_FILENAME}_packages.txt"
 REPORT_FILE: str = f"{BASE_FILENAME}_report.txt"
 
 NUMBER_OF_SUBJECTS: int = 8
 NUMBER_OF_FREE_CHOICE_SUBJECTS: int = 1
-MAX_NUMBER_OF_LANGUAGES: int = 4 
+MAX_NUMBER_OF_LANGUAGES: int = 4 # packages from 5150 to 4910
 
 ALL_SUBJECTS: Set[str] = {"ak", "beco", "biol", "chtc", "ct", "dutl", "econ", "entl", "fatl", "fi", "ges", "gtc", "in", "ltc", "mu", "nat", "netl", "schk", "sptl", "te", "wisa", "wisb", "wisc", "wisd"}
 
@@ -31,7 +42,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"nat"},
             {"schk"},
             {"wisb"},
-            {"in", "wisd", "biol"}, # add biol
+            {"in", "wisd"}, # no # add biol
         ],
         "free_groups": [
             ALL_SUBJECTS,
@@ -69,7 +80,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
             {"econ"},
-            {"beco", "ak"}, # add "ak", "fatl", "dutl","sptl","chtc" - not in someprofiles
+            {"beco"}, # add "ak", no "fatl", "dutl","sptl","chtc"
             {"wisa"},
         ],
         "free_groups": [
@@ -82,7 +93,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
             {"econ"},
-            {"beco", "ak"}, # add "ak", "fatl", "dutl","sptl","chtc" - not in someprofiles
+            {"beco"}, # add "ak", no "fatl", "dutl","sptl","chtc"
             {"wisb"},
         ],
         "free_groups": [
@@ -94,7 +105,7 @@ PROFILE_RULES: Dict[str, Dict[str, object]] = {
         "profile_groups": [
             {"fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
             {"ges"},
-            {"ak"}, # add "econ" - not in someprofiles
+            {"ak"}, # not add "econ"
             {"wisc", "wisa"}, # add "wisb" # packages from 4910 to 4156
             {"fi", "te", "mu", "fatl", "dutl", "sptl", "chtc", "gtc", "ltc"},
         ],
@@ -198,6 +209,10 @@ def valid_wiskunde_rules(package: Set[str]) -> bool:
         
     # school requirement # packages from 4156 to 3888
     if "wisc" in package and "wisb" in package:
+       return False
+
+    # school requirement # packages from 3888 to 3620
+    if "wisa" in package and "wisb" in package:
        return False
 
     return True
